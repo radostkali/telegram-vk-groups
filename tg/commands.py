@@ -4,6 +4,7 @@ from telegram.ext import (
     CommandHandler,
     MessageHandler,
     CallbackQueryHandler,
+    Filters,
 )
 
 from tg.utils import (
@@ -27,7 +28,7 @@ def start(update, context):
     update.message.reply_text('Hi there!', reply_markup=menu)
     update.message.reply_text('You can now create your publics list!', reply_markup=options_markup)
     context.user_data.update({'stage': STAGE_LISTENING})
-    check_or_create_user_in_db(update.message.from_user.id)
+    check_or_create_user_in_db(update.effective_chat.id)
 
 
 def options(update, context):
@@ -67,6 +68,6 @@ HANDLERS = (
     CommandHandler('start', start),
     CommandHandler('options', options),
     CallbackQueryHandler(button),
-    MessageHandler(None, text_input),
+    MessageHandler(Filters.text, text_input),
 )
 

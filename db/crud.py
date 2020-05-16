@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Iterator, Dict, Union
+from typing import Iterator, Dict, Union, List, Any
 from datetime import datetime
 
 from db.models import Base, User, Public, UserPublic
@@ -46,7 +46,8 @@ def check_if_user_exists(user_id):
 def put_user_in_db(user_id):
     # type: (int) -> None
     with db_session() as s:
-        user = User(id=user_id)
+        timestamp_now = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
+        user = User(id=user_id, last_refresh=timestamp_now)
         s.add(user)
 
 
@@ -63,8 +64,6 @@ def put_public_in_db(public_info):
         public = Public(
             id=public_info['public_id'],
             public_name=public_info['public_name'],
-            last_post=datetime(2000, 1, 1, 0, 0, 0),
-            last_check=datetime(2000, 1, 1, 0, 0, 0),
         )
         s.add(public)
 
@@ -75,11 +74,41 @@ def link_public_to_user(user_id, public_id):
         if not s.query(UserPublic).filter_by(user_id=user_id, public_id=public_id).first():
             user = s.query(User).get(user_id)
             public = s.query(Public).get(public_id)
-            user_public = UserPublic(timestamp=datetime.utcnow())
+            user_public = UserPublic()
             user_public.public = public
             user_public.user = user
             public.users.append(user_public)
             user.publics.append(user_public)
+
+
+def get_users_publics_to_refresh():
+    # type: () -> Dict[int, Dict[str, Union[str, Dict[int, Dict[str, Union[str, List[Any]]]]]]]
+    with db_session() as s:
+        users = s.query(User).all()
+        users_dict = {}
+        for user in users:
+            user_id = user.id
+            last_refresh = user.last_refresh
+            publics = user.publics
+            users_dict[user_id] = {
+                'last_refresh': last_refresh,
+                'publics': {
+                    i.public.id:
+                        {
+                            'name': i.public.public_name,
+                            'posts': [],
+                        } for i in publics
+                }
+            }
+        return users_dict
+
+
+def update_user_last_refresh(user_id):
+    # type: (int) -> None
+    with db_session() as s:
+        user = s.query(User).get(user_id)
+        timestamp_now = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
+        user.last_refresh = timestamp_now
 
 
 if __name__ == '__main__':

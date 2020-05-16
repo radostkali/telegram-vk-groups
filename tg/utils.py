@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Union
+from typing import Optional, Dict, Union, List, Tuple, Any
 
 from vk import vk
 from db.crud import (
@@ -6,8 +6,11 @@ from db.crud import (
     put_user_in_db,
     check_if_public_exists,
     put_public_in_db,
-    link_public_to_user
+    link_public_to_user,
+    get_users_publics_to_refresh,
+    update_user_last_refresh,
 )
+from tg.msg_media_types import get_post_message
 
 
 def handle_public_link(link):
@@ -18,7 +21,8 @@ def handle_public_link(link):
             link = splited_link[-1]
         else:
             return None
-    link = link.lstrip('public')
+    if 'public' in link[:6]:
+        link = link.lstrip('public')
     public_info = vk.get_public_info_by_name(link)
     return public_info
 
@@ -42,3 +46,21 @@ def link_public_to_user_in_db(user_id, public_info):
     check_or_create_public_in_db(public_info)
     link_public_to_user(user_id, public_info['public_id'])
 
+
+def prepare_new_posts():
+    # type: () -> List[Tuple[str, Dict[str, Any]]]
+    posts_to_send = []
+    users_publics = get_users_publics_to_refresh()
+    for user_id, user in users_publics.items():
+        last_refresh = user['last_refresh']
+        for pub_id in user['publics']:
+            users_publics[user_id]['publics'][pub_id]['posts'] = vk.get_new_posts(pub_id, last_refresh)
+            for post in users_publics[user_id]['publics'][pub_id]['posts']:
+                post_to_send = get_post_message(
+                    post=post,
+                    user_id=user_id,
+                    pub_name=users_publics[user_id]['publics'][pub_id]['name'],
+                )
+                posts_to_send.append(post_to_send)
+        update_user_last_refresh(user_id)
+    return posts_to_send

@@ -3,5 +3,5 @@ import logging
 from tg.bot import TgBot
 
 
-bot = TgBot(loglevel=logging.INFO)
+bot = TgBot(loglevel=logging.DEBUG)
 bot.start()

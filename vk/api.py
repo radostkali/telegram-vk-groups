@@ -1,5 +1,6 @@
 import json
 from typing import Dict, Optional, List, Union
+from datetime import datetime
 
 from settings import VK_API_KEY, VK_API_VERSION
 
@@ -14,12 +15,29 @@ class VkApi:
             'v={}'.format(VK_API_VERSION),
         ]
 
-    def get_wall_last_post(self, group_id):
-        # type: (Optional[str, int]) -> Optional[Dict, None]
+    def get_new_posts(self, pub_id, last_refresh):
+        # type: (int, int) -> List[Dict[str, Union[int, str, List[str], bool]]]
+        offset = 0
+        post_count = 3
+        posts = []
+        while True:
+            new_posts = self.get_wall_last_posts(pub_id, post_count=post_count, offset=offset)
+            if not new_posts:
+                break
+            for post in new_posts:
+                if post['timestamp'] > last_refresh:
+                    posts.append(post)
+                else:
+                    return posts
+                offset += 3
+
+    def get_wall_last_posts(self, pub_id, post_count=3, offset=0):
+        # type: (Union[str, int], int, int) -> Optional[List[Dict[str, Union[int, str, List[str], bool]]]]
         method = 'wall.get'
         params = [
-            'owner_id=-{}'.format(group_id),
-            'count=1',
+            'owner_id=-{}'.format(pub_id),
+            'count={}'.format(post_count),
+            'offset={}'.format(offset),
             'filter=owner',
         ]
         response = self._request(method, params)
@@ -27,17 +45,19 @@ class VkApi:
             self._api_error_handler(response)
         elif 'response' in response:
             if response['response']['count'] > 0:
-                post = response['response']['items'][0]
-                last_post = {
-                    'id': post['id'],
-                    'timestamp': post['date'],
-                    'text': post['text'],
-                    'is_pinned': post['is_pinned'],
-                    'pictures': (
-                        a['photo']['sizes'][-1]['url'] for a in post['attachments'] if a['type'] == 'photo'
-                    )
-                }
-                return last_post
+                items = response['response']['items']
+                posts = []
+                for post in items:
+                    posts.append({
+                        'id': post['id'],
+                        'timestamp': post['date'],
+                        'text': post['text'],
+                        'is_pinned': True if 'is_pinned' in post else False,
+                        'pictures': [
+                            a['photo']['sizes'][-1]['url'] for a in post['attachments'] if a['type'] == 'photo'
+                        ] if 'attachments' in post else []
+                    })
+                return posts
         return
 
     def get_public_info_by_name(self, public_name):
@@ -71,4 +91,4 @@ class VkApi:
 
 if __name__ == '__main__':
     vk = VkApi()
-    vk.get_wall_last_post(124302406)
+    vk.get_wall_last_posts(124302406)
