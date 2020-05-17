@@ -37,7 +37,7 @@ def get_post_message(post, user_id, pub_name, pub_id):
     message_payload = {
         'chat_id': user_id,
         'parse_mode': 'HTML',
-        'reply_markup': get_comment_markup(pub_id, pub_name)
+        'reply_markup': get_comment_markup(pub_id, pub_id)
     }
     if post['is_pinned']:
         return None
