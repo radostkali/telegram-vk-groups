@@ -1,6 +1,5 @@
 import json
 from typing import Dict, Optional, List, Union
-from datetime import datetime
 
 from settings import VK_API_KEY, VK_API_VERSION
 
