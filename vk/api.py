@@ -1,5 +1,6 @@
 import json
 from typing import Dict, Optional, List, Union
+import time
 
 from settings import VK_API_KEY, VK_API_VERSION
 
@@ -29,6 +30,7 @@ class VkApi:
                 else:
                     return posts
                 offset += 3
+            time.sleep(0.5)
 
     def get_wall_last_posts(self, pub_id, post_count=3, offset=0):
         # type: (Union[str, int], int, int) -> Optional[List[Dict[str, Union[int, str, List[str], bool]]]]
