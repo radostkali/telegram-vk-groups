@@ -24,7 +24,7 @@ class VkApi:
             if not new_posts:
                 break
             for post in new_posts:
-                if post['timestamp'] > last_refresh:
+                if post['timestamp'] > last_refresh or post['is_pinned']:
                     posts.append(post)
                 else:
                     return posts
