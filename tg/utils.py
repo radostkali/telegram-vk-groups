@@ -9,6 +9,8 @@ from db.crud import (
     link_public_to_user,
     get_users_publics_to_refresh,
     update_user_last_refresh,
+    get_user_publics,
+    remove_user_public_by_id,
 )
 from tg.msg_media_types import get_post_message
 
@@ -64,3 +66,21 @@ def prepare_new_posts():
                 posts_to_send.append(post_to_send)
         update_user_last_refresh(user_id)
     return posts_to_send
+
+
+def list_user_publics(user_id):
+    # type: (int) -> str
+    publics = get_user_publics(user_id=user_id)
+    nums_pubs = ['{}) {}'.format(e + 1, p) for e, p in enumerate(publics.values())]
+    return '\n'.join(nums_pubs)
+
+
+def remove_public_by_number(user_id, pub_num):
+    # type (int, int) -> bool
+    publics = get_user_publics(user_id=user_id)
+    if not 0 < pub_num <= len(publics):
+        return None
+    public_ids = [p for p in publics.keys()]
+    removed = remove_user_public_by_id(user_id, public_ids[pub_num - 1])
+    if removed:
+        return publics[public_ids[pub_num - 1]]

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DEBUG = True if os.getenv('DEBUG') else False
+DEBUG = True if int(os.getenv('DEBUG')) == 1 else False
 
 # VK
 VK_API_KEY = os.getenv('VK_API_KEY')

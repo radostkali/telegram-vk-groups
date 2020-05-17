@@ -111,5 +111,27 @@ def update_user_last_refresh(user_id):
         user.last_refresh = timestamp_now
 
 
+def get_user_publics(user_id):
+    # type: (int) -> Dict[int, str]
+    with db_session() as s:
+        user = s.query(User).get(user_id)
+        publics = {p.public.id: p.public.public_name for p in user.publics}
+        return publics
+
+
+def remove_user_public_by_id(user_id, public_id):
+    # type: (int, int) -> bool
+    with db_session() as s:
+        user_public = s.query(UserPublic).filter_by(
+            user_id=user_id,
+            public_id=public_id,
+        ).first()
+        s.delete(user_public)
+        public = s.query(Public).get(public_id)
+        if len(public.users) == 0:
+            s.delete(public)
+        return True
+
+
 if __name__ == '__main__':
     recreate_tables()
