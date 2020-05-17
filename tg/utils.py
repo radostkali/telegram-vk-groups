@@ -62,6 +62,7 @@ def prepare_new_posts():
                     post=post,
                     user_id=user_id,
                     pub_name=users_publics[user_id]['publics'][pub_id]['name'],
+                    pub_id=pub_id,
                 )
                 posts_to_send.append(post_to_send)
         update_user_last_refresh(user_id)

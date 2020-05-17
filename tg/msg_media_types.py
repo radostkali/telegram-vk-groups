@@ -3,6 +3,8 @@ from typing import Optional, Dict, Union, List, Tuple, Any
 from telegram.ext import CallbackContext
 from telegram import InputMediaPhoto
 
+from tg.markups import get_comment_markup
+
 
 def send_photo(context, payload):
     # type: (CallbackContext, Dict[str]) -> None
@@ -30,16 +32,18 @@ MESSAGE_MEDIA_TYPES = {
 }
 
 
-def get_post_message(post, user_id, pub_name):
-    # type: (Dict[str, Union[int, str, List[str], bool]], int, str) -> Optional[Tuple[str, Dict[str, Any]]]
+def get_post_message(post, user_id, pub_name, pub_id):
+    # type: (Dict[str, Union[int, str, List[str], bool]], int, str, int) -> Optional[Tuple[str, Dict[str, Any]]]
     message_payload = {
         'chat_id': user_id,
         'parse_mode': 'HTML',
+        'reply_markup': get_comment_markup(pub_id, pub_name)
     }
     if post['is_pinned']:
         return None
     elif len(post['pictures']) == 0:
         media_type = MEDIA_TEXT
+        message_payload['disable_web_page_preview'] = True
         message_payload['text'] = '{}\n\n<code>{}</code>'.format(post['text'], pub_name)
     elif len(post['pictures']) == 1:
         media_type = MEDIA_PHOTO
