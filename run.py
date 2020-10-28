@@ -1,15 +1,18 @@
 import logging
 
 from tg.bot import TgBot
-from db.crud import create_tables, drop_tables
+from db.crud import DBTablesControlService
 import settings
 
 
 if __name__ == '__main__':
-    drop_tables()
-    create_tables()
-
-    loglevel = logging.DEBUG if settings.DEBUG else logging.CRITICAL
+    db_tables_control_service = DBTablesControlService()
+    if settings.DEBUG:
+        db_tables_control_service.recreate_tables()
+        loglevel = logging.DEBUG
+    else:
+        db_tables_control_service.create_tables()
+        loglevel = logging.CRITICAL
 
     bot = TgBot(loglevel=loglevel)
     bot.start()

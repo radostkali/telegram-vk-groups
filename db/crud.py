@@ -19,17 +19,16 @@ def db_session() -> Iterator[Session]:
         session.close()
 
 
-def create_tables() -> None:
-    Base.metadata.create_all(engine)
+class DBTablesControlService:
+    def create_tables(self) -> None:
+        Base.metadata.create_all(engine)
 
+    def drop_tables(self) -> None:
+        Base.metadata.drop_all(engine)
 
-def drop_tables() -> None:
-    Base.metadata.drop_all(engine)
-
-
-def recreate_tables() -> None:
-    drop_tables()
-    create_tables()
+    def recreate_tables(self) -> None:
+        self.drop_tables()
+        self.create_tables()
 
 
 def check_if_user_exists(user_id: int) -> bool:

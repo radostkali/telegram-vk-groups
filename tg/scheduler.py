@@ -16,6 +16,6 @@ def get_posts(context: CallbackContext) -> None:
 
 SCHEDULERS = (
     # (callback, timeout)
-    (get_posts, 60 * 1),  # 30 min
+    (get_posts, 60 * 30),  # 30 min
 )
 
