@@ -15,8 +15,7 @@ class VkApi:
             'v={}'.format(VK_API_VERSION),
         ]
 
-    def get_new_posts(self, pub_id, last_refresh):
-        # type: (int, int) -> List[Dict[str, Union[int, str, List[str], bool]]]
+    def get_new_posts(self, pub_id: int, last_refresh: int) -> List[Dict[str, Union[int, str, List[str], bool]]]:
         offset = 0
         post_count = 3
         posts = []
@@ -32,8 +31,7 @@ class VkApi:
                 offset += 3
             time.sleep(0.5)
 
-    def get_wall_last_posts(self, pub_id, post_count=3, offset=0):
-        # type: (Union[str, int], int, int) -> Optional[List[Dict[str, Union[int, str, List[str], bool]]]]
+    def get_wall_last_posts(self, pub_id: Union[str, int], post_count: int = 3, offset: int = 0) -> Optional[List[Dict[str, Union[int, str, List[str], bool]]]]:
         method = 'wall.get'
         params = [
             'owner_id=-{}'.format(pub_id),
@@ -61,11 +59,10 @@ class VkApi:
                 return posts
         return
 
-    def get_public_info_by_name(self, public_name):
-        # type: (str) -> Optional[Dict[str, Union[int, str]]]
+    def get_public_info_by_slug(self, slug_name: str) -> Optional[Dict[str, Union[int, str]]]:
         method = 'groups.getById'
         params = [
-            'group_id={}'.format(public_name)
+            'group_id={}'.format(slug_name)
         ]
         response = self._request(method, params)
         if 'error' in response:
@@ -75,11 +72,11 @@ class VkApi:
             public_info = {
                 'public_id': response['response'][0]['id'],
                 'public_name': response['response'][0]['name'],
+                'public_slug_url': slug_name
             }
             return public_info
 
-    def _request(self, method, params):
-        # type: (str, List) -> Dict
+    def _request(self, method: str, params: List) -> Dict:
         params = params + self.requiered_params
         raw_params = '&'.join(params)
         url = 'https://api.vk.com/method/{method}?{params}'.format(method=method, params=raw_params)

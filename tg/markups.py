@@ -24,8 +24,7 @@ done_buttons = [
 done_markup = InlineKeyboardMarkup(done_buttons, one_time_keyboard=True)
 
 
-def get_comment_markup(pub_id, post_id):
-    # type: (int, int) -> InlineKeyboardMarkup
+def get_comment_markup(pub_id: int, post_id: int) -> InlineKeyboardMarkup:
     btn = [[InlineKeyboardButton(
         text='See comments',
         url='https://vk.com/wall-{}_{}'.format(pub_id, post_id),

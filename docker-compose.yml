@@ -1,0 +1,26 @@
+version: '3.6'
+
+services:
+  db:
+    container_name: telegram_memes_postgres
+    image: postgres:12.3-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=telegram
+      - POSTGRES_USER=tradionov
+      - POSTGRES_PASSWORD=P@ssw0rd
+
+  web:
+    container_name: telegram_memes_bot
+    build: .
+    command: bash -c "python run.py"
+    volumes:
+      - .:/usr/src/app/
+    env_file:
+      - .env.dev
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

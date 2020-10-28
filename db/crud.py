@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Iterator, Dict, Union, List, Any
+from typing import Iterator, Dict, Union, List, Any, Optional
 from datetime import datetime
 
 from db.models import Base, User, Public, UserPublic
@@ -7,8 +7,7 @@ from db import engine, Session
 
 
 @contextmanager
-def db_session():
-    # type: () -> Iterator[Session]
+def db_session() -> Iterator[Session]:
     session = Session()
     try:
         yield session
@@ -20,56 +19,60 @@ def db_session():
         session.close()
 
 
-def create_tables():
-    # type: () -> None
+def create_tables() -> None:
     Base.metadata.create_all(engine)
 
 
-def drop_tables():
-    # type: () -> None
+def drop_tables() -> None:
     Base.metadata.drop_all(engine)
 
 
-def recreate_tables():
-    # type: () -> None
+def recreate_tables() -> None:
     drop_tables()
     create_tables()
 
 
-def check_if_user_exists(user_id):
-    # type: (int) -> bool
+def check_if_user_exists(user_id: int) -> bool:
     with db_session() as s:
         user = s.query(User).filter_by(id=user_id).first()
     return False if not user else True
 
 
-def put_user_in_db(user_id):
-    # type: (int) -> None
+def put_user_in_db(
+        user_id: int,
+        login: str,
+        first_name: Optional[str],
+        last_name: Optional[str],
+) -> None:
     with db_session() as s:
         timestamp_now = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
-        user = User(id=user_id, last_refresh=timestamp_now)
+        user = User(
+            id=user_id,
+            last_refresh=timestamp_now,
+            login=login,
+            first_name=first_name,
+            last_name=last_name,
+        )
         s.add(user)
 
 
-def check_if_public_exists(public_id):
-    # type: (int) -> bool
+def check_if_public_exists(public_id: int) -> bool:
     with db_session() as s:
         public = s.query(Public).filter_by(id=public_id).first()
     return False if not public else True
 
 
-def put_public_in_db(public_info):
-    # type: (Dict[str, Union[int, str]]) -> None
+def put_public_in_db(public_info: Dict[str, Union[int, str]]) -> None:
     with db_session() as s:
         public = Public(
             id=public_info['public_id'],
-            public_name=public_info['public_name'],
+            name=public_info['public_name'],
+            slug_url=public_info['public_slug_url'],
         )
         s.add(public)
 
 
-def link_public_to_user(user_id, public_id):
-    # type: (int, int) -> None
+def link_public_to_user(user_id: int, public_id: int) -> None:
     with db_session() as s:
         if not s.query(UserPublic).filter_by(user_id=user_id, public_id=public_id).first():
             user = s.query(User).get(user_id)
@@ -81,8 +84,7 @@ def link_public_to_user(user_id, public_id):
             user.publics.append(user_public)
 
 
-def get_users_publics_to_refresh():
-    # type: () -> Dict[int, Dict[str, Union[str, Dict[int, Dict[str, Union[str, List[Any]]]]]]]
+def get_users_publics_to_refresh() -> Dict[int, Dict[str, Union[str, Dict[int, Dict[str, Union[str, List[Any]]]]]]]:
     with db_session() as s:
         users = s.query(User).all()
         users_dict = {}
@@ -95,7 +97,7 @@ def get_users_publics_to_refresh():
                 'publics': {
                     i.public.id:
                         {
-                            'name': i.public.public_name,
+                            'name': i.public.name,
                             'posts': [],
                         } for i in publics
                 }
@@ -103,24 +105,21 @@ def get_users_publics_to_refresh():
         return users_dict
 
 
-def update_user_last_refresh(user_id):
-    # type: (int) -> None
+def update_user_last_refresh(user_id: int) -> None:
     with db_session() as s:
         user = s.query(User).get(user_id)
         timestamp_now = int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
         user.last_refresh = timestamp_now
 
 
-def get_user_publics(user_id):
-    # type: (int) -> Dict[int, str]
+def get_user_publics(user_id: int) -> Dict[int, str]:
     with db_session() as s:
         user = s.query(User).get(user_id)
-        publics = {p.public.id: p.public.public_name for p in user.publics}
+        publics = {p.public.id: p.public.name for p in user.publics}
         return publics
 
 
-def remove_user_public_by_id(user_id, public_id):
-    # type: (int, int) -> bool
+def remove_user_public_by_id(user_id: int, public_id: int) -> bool:
     with db_session() as s:
         user_public = s.query(UserPublic).filter_by(
             user_id=user_id,

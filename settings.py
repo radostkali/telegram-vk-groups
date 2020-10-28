@@ -1,8 +1,4 @@
 import os
-from dotenv import load_dotenv
-
-
-load_dotenv()
 
 DEBUG = True if int(os.getenv('DEBUG')) == 1 else False
 

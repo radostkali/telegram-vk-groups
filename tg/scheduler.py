@@ -6,8 +6,7 @@ from tg.utils import prepare_new_posts
 from tg.msg_media_types import MESSAGE_MEDIA_TYPES
 
 
-def get_posts(context):
-    # type: (CallbackContext) -> None
+def get_posts(context: CallbackContext) -> None:
     posts = prepare_new_posts()
     for post in posts:
         if post:
@@ -17,6 +16,6 @@ def get_posts(context):
 
 SCHEDULERS = (
     # (callback, timeout)
-    (get_posts, 60 * 30),  # 30 min
+    (get_posts, 60 * 1),  # 30 min
 )
 

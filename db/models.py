@@ -17,21 +17,25 @@ class UserPublic(Base):
 class Public(Base):
     __tablename__ = 'public'
     id = Column(Integer, primary_key=True)
-    public_name = Column(String)
+    name = Column(String)
+    slug_url = Column(String)
+
     users = relationship('UserPublic', back_populates='public')
 
     def __repr__(self):
-        return "<Public(public_name='{}', id={})>" \
-            .format(self.public_name, self.id)
+        return "<Public(name='{}', id={})>".format(self.name, self.id)
 
 
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
     last_refresh = Column(Integer)
+    login = Column(String)
+    first_name = Column(String, nullable=True)
+    last_name = Column(String, nullable=True)
+
     publics = relationship('UserPublic', back_populates='user')
 
     def __repr__(self):
-        return "<Users(id={})>" \
-            .format(self.id)
+        return "<Users(id={})>".format(self.id)
 

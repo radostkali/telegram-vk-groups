@@ -6,18 +6,15 @@ from telegram import InputMediaPhoto
 from tg.markups import get_comment_markup
 
 
-def send_photo(context, payload):
-    # type: (CallbackContext, Dict[str]) -> None
+def send_photo(context: CallbackContext, payload: Dict[str, Any]) -> None:
     context.bot.send_photo(**payload)
 
 
-def send_text(context, payload):
-    # type: (CallbackContext, Dict[str]) -> None
+def send_text(context: CallbackContext, payload: Dict[str, Any]) -> None:
     context.bot.send_message(**payload)
 
 
-def send_group(context, payload):
-    # type: (CallbackContext, Dict[str]) -> None
+def send_group(context: CallbackContext, payload: Dict[str, Any]) -> None:
     context.bot.send_media_group(**payload)
 
 
@@ -32,8 +29,11 @@ MESSAGE_MEDIA_TYPES = {
 }
 
 
-def get_post_message(post, user_id, pub_name, pub_id):
-    # type: (Dict[str, Union[int, str, List[str], bool]], int, str, int) -> Optional[Tuple[str, Dict[str, Any]]]
+def get_post_message(
+        post: Dict[str, Union[int, str, List[str], bool]],
+        user_id: int,
+        pub_name: str,
+        pub_id: int) -> Optional[Tuple[str, Dict[str, Any]]]:
     message_payload = {
         'chat_id': user_id,
         'parse_mode': 'HTML',
