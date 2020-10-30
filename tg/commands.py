@@ -8,7 +8,7 @@ from telegram.ext import (
 )
 
 from tg.utils import (
-    handle_public_link,
+    try_fetch_vk_public,
     check_or_create_user_in_db,
     link_public_to_user_in_db,
     list_user_publics,
@@ -78,11 +78,13 @@ def text_input(update: Update, context: CallbackContext) -> None:
     if 'stage' not in context.user_data:
         return
     if context.user_data['stage'] == STAGE_ADDING:
-        public_info = handle_public_link(update.message.text)
-        if public_info:
+        public_dto = try_fetch_vk_public(
+            slug_or_link=update.message.text
+        )
+        if public_dto:
             link_public_to_user_in_db(
                 user_id=update.message.from_user.id,
-                public_info=public_info
+                public_dto=public_dto
             )
             update.message.reply_text('Good! Another one?', reply_markup=done_markup)
         else:

@@ -5,8 +5,10 @@ from telegram.ext import CallbackContext
 from tg.utils import prepare_new_posts
 from tg.msg_media_types import MESSAGE_MEDIA_TYPES
 
+import settings
 
-def get_posts(context: CallbackContext) -> None:
+
+def send_fresh_posts_callback(context: CallbackContext) -> None:
     posts = prepare_new_posts()
     for post in posts:
         if post:
@@ -16,6 +18,6 @@ def get_posts(context: CallbackContext) -> None:
 
 SCHEDULERS = (
     # (callback, timeout)
-    (get_posts, 60 * 30),  # 30 min
+    (send_fresh_posts_callback, settings.TG_SEND_FRESH_POSTS_IN_EVERY_SECONDS),  # 30 min
 )
 
