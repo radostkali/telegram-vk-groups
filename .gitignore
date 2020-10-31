@@ -1,3 +1,4 @@
 .env.dev
 .idea/
 __pycache__/
+logs/

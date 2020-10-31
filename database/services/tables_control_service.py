@@ -1,5 +1,5 @@
-from db import engine
-from db.models import Base
+from database import engine
+from database.models import Base
 
 
 class DBTablesControlService:

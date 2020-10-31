@@ -6,6 +6,12 @@ from sqlalchemy.orm import relationship
 Base = declarative_base()
 
 
+class LastRefresh(Base):
+    __tablename__ = 'last_refresh'
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(Integer)
+
+
 class UserPublic(Base):
     __tablename__ = 'user_public'
     user_id = Column(Integer, ForeignKey('user.id'), primary_key=True)
@@ -29,7 +35,6 @@ class Public(Base):
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    last_refresh = Column(Integer)
     login = Column(String)
     first_name = Column(String, nullable=True)
     last_name = Column(String, nullable=True)

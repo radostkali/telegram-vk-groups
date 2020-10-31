@@ -8,14 +8,8 @@ import settings
 import requests
 from requests import Response
 
-from vk.loggers import VkApiBaseLogger
-
-
-@dataclass
-class PublicDTO:
-    public_id: int
-    public_name: str
-    public_slug_url: str
+from database.daos.public_dao import PublicDTO
+from vk_service.loggers import VkApiBaseLogger
 
 
 @dataclass
@@ -101,7 +95,7 @@ class VkApi(VkApiBase):
     ) -> List[PostDTO]:
         method = 'wall.get'
         params = {
-            'owner_id': public_id,
+            'owner_id': '-{}'.format(public_id),
             'count': post_count,
             'offset': offset,
             'filter': 'owner',
@@ -133,7 +127,7 @@ class VkApi(VkApiBase):
 
         return posts
 
-    def fetch_fresh_posts(self, public_id: int, last_refresh: int) -> List[PostDTO]:
+    def fetch_fresh_posts(self, public_id: int, from_timestamp: int) -> List[PostDTO]:
         fresh_posts = []
         for step_number in range(self.FETCHING_POSTS_MAX_STEPS):
             offset = self.FETCHING_POSTS_STEP * step_number
@@ -146,7 +140,9 @@ class VkApi(VkApiBase):
                 break
 
             for post in fetched_posts:
-                if post.timestamp > last_refresh or post.is_pinned:
+                if post.timestamp > from_timestamp:
+                    if post.is_pinned:
+                        continue
                     fresh_posts.append(post)
                 else:
                     break
@@ -173,9 +169,3 @@ class VkApi(VkApiBase):
             raise VkResponseError
 
         return public_dto
-
-
-if __name__ == '__main__':
-    from vk.loggers import VkApiErrorDebugLogger
-    vk = VkApi(VkApiErrorDebugLogger())
-    vk._get_wall_posts(124302406)

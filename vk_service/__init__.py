@@ -1,5 +1,5 @@
-from vk.api import VkApi
-from vk.loggers import (
+from vk_service.api import VkApi
+from vk_service.loggers import (
     VkApiRequestDebugLogger,
     VkApiRequestLogger,
     VkApiErrorDebugLogger,
