@@ -1,7 +1,7 @@
 from typing import List
 
 from database.daos.user_public_dao import UserPublicDAO, UserPublicRefreshDTO
-from vk_service import VkAPI
+from vk_service import vk_api
 
 from fetch_and_send_service.services.vk_post_to_tg_message_service import VkPostToTgMessageService, TgMessageDTO
 
@@ -20,8 +20,8 @@ class FetchFreshPostsToMessagesService:
         public_id_posts_dto_map = {}
         for user_publics_refresh_dto in user_publics_refresh_dto_list:
             for public_dto in user_publics_refresh_dto.publics:
-                if public_dto.public_id not in public_id_posts_dto_map:
-                    post_dto_list = VkAPI.fetch_fresh_posts(
+                if public_dto.public_id not in public_id_posts_dto_map.keys():
+                    post_dto_list = vk_api.fetch_fresh_posts(
                         public_id=public_dto.public_id,
                         from_timestamp=from_timestamp,
                     )

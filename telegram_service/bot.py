@@ -12,8 +12,7 @@ class TgBot:
 
     def __init__(self) -> None:
         self.updater = Updater(
-            token=settings.TG_BOT_TOKEN,
-            use_context=True,
+            token=settings.TG_BOT_TOKEN
         )
         self._add_handlers(
             dispatcher=self.updater.dispatcher,
@@ -41,7 +40,7 @@ class TgBot:
             job_queue.run_repeating(
                 callback=scheduler_dto.callback,
                 interval=scheduler_dto.interval,
-                first=0,
+                first=1,
             )
 
     def start(self):

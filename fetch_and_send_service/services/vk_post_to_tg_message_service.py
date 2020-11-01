@@ -5,25 +5,22 @@ from vk_service.api import PostDTO
 
 from telegram import InputMediaPhoto, InlineKeyboardButton, InlineKeyboardMarkup
 
+import telegram_service.constants
+
 
 @dataclass
 class TgMessageDTO:
-
-    MEDIA_TYPE_PHOTO = 'photo'
-    MEDIA_TYPE_TEXT = 'text'
-    MEDIA_TYPE_GROUP = 'group'
-
     media_type: Optional[str]
     payload: Dict[str, Any]
 
 
 class VkPostToTgMessageService:
 
-    POST_COMMENTS_BUTTON_TEXT = 'See comments'
+    POST_COMMENTS_BUTTON_TEXT = 'Комментарии'
     POST_TEXT_TEMPLATE = (
         '{text}\n'
         '\n'
-        '<a href="https://vk.com/{public_slug}"><code>{public_name}</code>'
+        '<a href="https://vk.com/{public_slug}">{public_name}</a>'
     )
 
     def _get_comment_btn_markup(self, public_id: int, post_id: int) -> InlineKeyboardMarkup:
@@ -63,19 +60,19 @@ class VkPostToTgMessageService:
 
         pictures_number = len(post.pictures)
         if pictures_number == 0:
-            media_type = TgMessageDTO.MEDIA_TYPE_TEXT
+            media_type = telegram_service.constants.MEDIA_TYPE_TEXT
             message_payload.update({
                 'text': message_text,
                 'disable_web_page_preview': True,
             })
         elif pictures_number == 1:
-            media_type = TgMessageDTO.MEDIA_TYPE_PHOTO
+            media_type = telegram_service.constants.MEDIA_TYPE_PHOTO
             message_payload.update({
                 'caption': message_text,
                 'photo': post.pictures[0],
             })
         elif pictures_number > 1:
-            media_type = TgMessageDTO.MEDIA_TYPE_GROUP
+            media_type = telegram_service.constants.MEDIA_TYPE_GROUP
             message_payload['media'] = [InputMediaPhoto(media=url) for url in post.pictures]
             message_payload['media'][0].caption = message_text
             message_payload['media'][0].parse_mode = 'HTML'

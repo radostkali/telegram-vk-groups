@@ -4,6 +4,7 @@ from telegram.ext import CallbackContext
 import telegram_service.constants
 from telegram_service.command_handlers.add_command_handler import AddCommandHandler
 from telegram_service.command_handlers.delete_command_handler import DeleteCommandHandler
+from telegram_service.command_handlers.list_command_handler import ListCommandHandler
 from telegram_service.text_handlers.base_text_stage_handler import BaseTextStageHandler
 from telegram_service.services.try_find_publics_service import TryFindPublicsService
 from telegram_service.services.subscribe_user_to_public_service import SubscribeUserToPublicService
@@ -53,6 +54,7 @@ class AddTextHandler(BaseTextStageHandler):
         update.message.reply_text(
             text=f'{success_founded_publics_html}\n\n'
                  f'{not_found_publics_html}\n\n'
+                 f'Список пабликов: /{ListCommandHandler.COMMAND}\n'
                  f'Добавить паблик: /{AddCommandHandler.COMMAND}\n'
                  f'Отписаться: /{DeleteCommandHandler.COMMAND}',
             parse_mode='HTML',

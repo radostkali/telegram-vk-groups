@@ -4,15 +4,25 @@ from logging.handlers import RotatingFileHandler
 
 from telegram_service.bot import TgBot
 from database.services.tables_control_service import DBTablesControlService
+from database.daos.last_refresh_dao import LastRefreshDAO
+from database.utils import db_session
 
 import settings
 
 
 if __name__ == '__main__':
     if settings.DEBUG:
+        from datetime import datetime, timedelta
+        with db_session() as session:
+            last_refresh = LastRefreshDAO._get_or_create_last_refresh(session)
+            last_refresh.timestamp = int(
+                ((
+                     datetime.utcnow() - timedelta(minutes=180)
+                 ) - datetime(1970, 1, 1)).total_seconds()
+            )
         logging.basicConfig(
             format='[%(name)s %(levelname)s] %(asctime)s: %(message)s',
-            level=logging.DEBUG,
+            level=logging.NOTSET,
         )
     else:
         log_filepath = os.path.join(settings.BASEDIR, 'logs', 'tg_bot.log')
@@ -22,8 +32,9 @@ if __name__ == '__main__':
             backupCount=3,
         )
         logging.basicConfig(
+            handlers=[handler],
             format='[%(name)s %(levelname)s] %(asctime)s: %(message)s',
-            level=logging.CRITICAL,
+            level=logging.DEBUG,
         )
 
     db_tables_control_service = DBTablesControlService()

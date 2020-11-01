@@ -8,3 +8,7 @@ COMMANDS_DESCRIPTIONS_LIST = {
         '/delete': 'Удалить паблик из подписок',
         '/help': 'Скорая помощь по управлению ботом',
     }
+
+MEDIA_TYPE_PHOTO = 'photo'
+MEDIA_TYPE_TEXT = 'text'
+MEDIA_TYPE_GROUP = 'group'

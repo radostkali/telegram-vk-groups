@@ -15,7 +15,8 @@ else:
     api_info_logger = VkApiRequestLogger()
     api_error_logger = VkApiErrorLogger()
 
-VkAPI = VkApi(
+vk_api = VkApi(
     info_logger=api_info_logger,
     error_logger=api_error_logger,
+    vk_api_key=settings.VK_API_KEY,
 )

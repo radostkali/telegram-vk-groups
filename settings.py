@@ -1,11 +1,10 @@
 import os
 
 BASEDIR = os.path.dirname(os.path.realpath(__file__))
-DEBUG = True if int(os.getenv('DEBUG', 1)) == 1 else False
+DEBUG = bool(int(os.getenv('DEBUG', 1)))
 
 # VK
 VK_API_KEY = os.getenv('VK_API_KEY')
-VK_API_VERSION = '5.103'
 
 # TG
 TG_BOT_TOKEN = os.getenv('TG_BOT_TOKEN')

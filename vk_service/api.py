@@ -3,8 +3,6 @@ import time
 from dataclasses import dataclass
 from typing import Dict, List, Union
 
-import settings
-
 import requests
 from requests import Response
 
@@ -26,15 +24,17 @@ class VkResponseError(Exception):
 
 
 class VkApiBase:
+    VK_API_VERSION = '5.103'
 
     def __init__(
             self,
             info_logger: VkApiBaseLogger,
             error_logger: VkApiBaseLogger,
+            vk_api_key: str,
     ) -> None:
         self.requiered_params = {
-            'access_token': settings.VK_API_KEY,
-            'v': settings.VK_API_VERSION,
+            'access_token': vk_api_key,
+            'v': self.VK_API_VERSION,
         }
         self.info_logger = info_logger
         self.error_logger = error_logger
@@ -83,15 +83,15 @@ class VkApiBase:
 
 class VkApi(VkApiBase):
 
-    FETCHING_POSTS_STEP = 3
-    FETCHING_POSTS_MAX_STEPS = 10
+    FETCHING_POSTS_STEP = 5
+    FETCHING_POSTS_MAX_STEPS = 3
     SLEEP_BETWEEN_REQUESTS = 0.5
 
     def _get_wall_posts(
             self,
             public_id: Union[str, int],
-            post_count: int = 3,
-            offset: int = 0,
+            post_count: int,
+            offset: int,
     ) -> List[PostDTO]:
         method = 'wall.get'
         params = {
@@ -116,7 +116,7 @@ class VkApi(VkApiBase):
                         id=item['id'],
                         timestamp=item['date'],
                         text=item['text'],
-                        is_pinned=True if 'is_pinned' in item else False,
+                        is_pinned=bool(item.get('is_pinned')),
                         pictures=pictures,
                     )
                     posts.append(post_dto)
@@ -141,9 +141,9 @@ class VkApi(VkApiBase):
 
             for post in fetched_posts:
                 if post.timestamp > from_timestamp:
-                    if post.is_pinned:
-                        continue
-                    fresh_posts.append(post)
+                    if not post.is_pinned:
+                        fresh_posts.append(post)
+
                 else:
                     break
 
