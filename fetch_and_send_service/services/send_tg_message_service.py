@@ -1,5 +1,3 @@
-from typing import Any, Dict
-
 from telegram.ext import CallbackContext
 
 import telegram_service.constants
@@ -11,19 +9,19 @@ class SendTgMessageService:
     def __init__(self, callback_context: CallbackContext) -> None:
         self.callback_context = callback_context
 
-    def _send_photo(self, payload: Dict[str, Any]) -> None:
-        self.callback_context.bot.send_photo(**payload)
+    def _send_photo(self, message_dto: TgMessageDTO) -> None:
+        self.callback_context.bot.send_photo(**message_dto.payload)
 
-    def _send_text(self, payload: Dict[str, Any]) -> None:
-        self.callback_context.bot.send_message(**payload)
+    def _send_text(self, message_dto: TgMessageDTO) -> None:
+        self.callback_context.bot.send_message(**message_dto.payload)
 
-    def _send_group(self, payload: Dict[str, Any]) -> None:
-        self.callback_context.bot.send_media_group(**payload)
+    def _send_group(self, message_dto: TgMessageDTO) -> None:
+        self.callback_context.bot.send_media_group(**message_dto.payload)
 
     def execute(self, message_dto: TgMessageDTO) -> None:
         if message_dto.media_type == telegram_service.constants.MEDIA_TYPE_TEXT:
-            self._send_text(message_dto.payload)
+            self._send_text(message_dto)
         elif message_dto.media_type == telegram_service.constants.MEDIA_TYPE_PHOTO:
-            self._send_photo(message_dto.payload)
+            self._send_photo(message_dto)
         elif message_dto.media_type == telegram_service.constants.MEDIA_TYPE_GROUP:
-            self._send_group(message_dto.payload)
+            self._send_group(message_dto)

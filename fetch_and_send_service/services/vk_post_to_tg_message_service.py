@@ -45,11 +45,6 @@ class VkPostToTgMessageService:
     ) -> TgMessageDTO:
         message_payload = {
             'chat_id': user_id,
-            'parse_mode': 'HTML',
-            'reply_markup': self._get_comment_btn_markup(
-                public_id=public_id,
-                post_id=post.id,
-            )
         }
         message_text = self.POST_TEXT_TEMPLATE.format(
             text=post.text,
@@ -63,19 +58,33 @@ class VkPostToTgMessageService:
             media_type = telegram_service.constants.MEDIA_TYPE_TEXT
             message_payload.update({
                 'text': message_text,
+                'parse_mode': 'HTML',
                 'disable_web_page_preview': True,
+                'reply_markup': self._get_comment_btn_markup(
+                    public_id=public_id,
+                    post_id=post.id,
+                )
             })
         elif pictures_number == 1:
             media_type = telegram_service.constants.MEDIA_TYPE_PHOTO
             message_payload.update({
                 'caption': message_text,
+                'parse_mode': 'HTML',
                 'photo': post.pictures[0],
+                'reply_markup': self._get_comment_btn_markup(
+                    public_id=public_id,
+                    post_id=post.id,
+                )
             })
         elif pictures_number > 1:
             media_type = telegram_service.constants.MEDIA_TYPE_GROUP
             message_payload['media'] = [InputMediaPhoto(media=url) for url in post.pictures]
             message_payload['media'][0].caption = message_text
             message_payload['media'][0].parse_mode = 'HTML'
+            message_payload['media'][0].reply_markup = self._get_comment_btn_markup(
+                public_id=public_id,
+                post_id=post.id,
+            )
 
         message_dto = TgMessageDTO(
             media_type=media_type,

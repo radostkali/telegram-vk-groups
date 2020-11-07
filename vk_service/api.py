@@ -70,6 +70,8 @@ class VkApiBase:
 
         return content
 
+    #  def _retry(self, ):  ##  Add retries
+
     def _api_error_handler(self,url: str, response: Response) -> None:
         log_message = 'type: API error, status code: {}, url: {}, content: {}'.format(
             response.status_code, url, response.content
