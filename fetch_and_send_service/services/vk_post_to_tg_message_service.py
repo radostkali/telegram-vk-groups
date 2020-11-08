@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
-from vk_service.api import PostDTO
+from vk_service.services import PostDTO
 
 from telegram import InputMediaPhoto, InlineKeyboardButton, InlineKeyboardMarkup
 

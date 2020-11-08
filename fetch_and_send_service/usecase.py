@@ -14,8 +14,7 @@ class FetchingAndSendingMaxLimitError(Exception):
 
 class FetchAndSendFreshPostsUsecase:
 
-    # SEND_MESSAGES_MAX_TRY_COUNT = 3
-    SEND_MESSAGES_MAX_TRY_COUNT = 1
+    SEND_MESSAGES_MAX_TRY_COUNT = 3
     SLEEP_BETWEEN_MESSAGES_SENDING = 1
 
     def __init__(

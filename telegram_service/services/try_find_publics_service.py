@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional, List
 
-from vk_service import vk_api
 from vk_service.api import VkResponseError
+from vk_service.services import VkGetPublicService
 
 from database.daos.public_dao import PublicDTO
 
@@ -14,6 +14,9 @@ class FoundPublicsDTO:
 
 
 class TryFindPublicsService:
+
+    def __init__(self, vk_get_public_service: VkGetPublicService):
+        self.vk_get_public_service = vk_get_public_service
 
     def _parse_slug_name(self, slug_or_link: str) -> Optional[str]:
         slug_or_link = slug_or_link.strip(' \n&=/')
@@ -36,8 +39,8 @@ class TryFindPublicsService:
             return
 
         try:
-            public_dto = vk_api.get_public_info_by_slug_name(slug_name)
-        except VkResponseError:
+            public_dto = self.vk_get_public_service.get_by_slug_name(slug_name=slug_name)
+        except Exception:
             return
 
         return public_dto

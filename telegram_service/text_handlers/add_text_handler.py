@@ -1,6 +1,8 @@
 from telegram.update import Update
 from telegram.ext import CallbackContext
 
+from vk_service.services import VkGetPublicService
+
 import telegram_service.constants
 from telegram_service.command_handlers.add_command_handler import AddCommandHandler
 from telegram_service.command_handlers.delete_command_handler import DeleteCommandHandler
@@ -16,7 +18,10 @@ class AddTextHandler(BaseTextStageHandler):
 
     @classmethod
     def execute(cls, update: Update, context: CallbackContext) -> None:
-        try_find_public_service = TryFindPublicsService()
+        vk_get_public_service = VkGetPublicService()
+        try_find_public_service = TryFindPublicsService(
+            vk_get_public_service=vk_get_public_service
+        )
         subscribe_user_to_public_service = SubscribeUserToPublicService()
 
         found_publics_dto = try_find_public_service.execute(

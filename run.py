@@ -17,7 +17,7 @@ if __name__ == '__main__':
             last_refresh = LastRefreshDAO._get_or_create_last_refresh(session)
             last_refresh.timestamp = int(
                 ((
-                     datetime.utcnow() - timedelta(minutes=180)
+                     datetime.utcnow() - timedelta(hours=5)
                  ) - datetime(1970, 1, 1)).total_seconds()
             )
         logging.basicConfig(
