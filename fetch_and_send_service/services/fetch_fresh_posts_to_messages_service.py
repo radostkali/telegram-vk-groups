@@ -33,8 +33,6 @@ class FetchFreshPostsToMessagesService:
                     public_id_posts_dto_map[public_dto.public_id] = post_dto_list
 
                 posts_dto_list = public_id_posts_dto_map[public_dto.public_id]
-                print(public_dto.public_name)
-                print(len(posts_dto_list))
                 for post_dto in posts_dto_list:
                     post_message_to_send = self.vk_post_to_tg_message_service.execute(
                         post=post_dto,
@@ -43,9 +41,7 @@ class FetchFreshPostsToMessagesService:
                         public_name=public_dto.public_name,
                         public_slug=public_dto.public_slug_url,
                     )
-                    print(1)
                     if post_message_to_send.media_type:
-                        print(2)
                         messages_to_send.append(post_message_to_send)
 
         return messages_to_send
