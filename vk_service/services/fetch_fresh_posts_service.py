@@ -74,7 +74,7 @@ class VkFetchFreshPostsService:
                 if post.timestamp > from_timestamp:
                     if not post.is_pinned:
                         fresh_posts.append(post)
-                else:
+                elif not post.is_pinned:
                     return fresh_posts
 
             time.sleep(self.SLEEP_BETWEEN_REQUESTS)
