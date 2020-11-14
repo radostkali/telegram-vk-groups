@@ -1,3 +1,4 @@
+import time
 from contextlib import contextmanager
 from datetime import datetime
 from typing import Iterator
@@ -6,7 +7,7 @@ from database import Session
 
 
 def timestamp_now() -> int:
-    return int((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
+    return int(time.mktime(datetime.utcnow().timetuple()))
 
 
 @contextmanager

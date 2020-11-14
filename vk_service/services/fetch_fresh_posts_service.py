@@ -68,15 +68,14 @@ class VkFetchFreshPostsService:
                 offset=offset,
             )
             if not fetched_posts:
-                break
+                return fresh_posts
 
             for post in fetched_posts:
                 if post.timestamp > from_timestamp:
                     if not post.is_pinned:
                         fresh_posts.append(post)
-
                 else:
-                    break
+                    return fresh_posts
 
             time.sleep(self.SLEEP_BETWEEN_REQUESTS)
 

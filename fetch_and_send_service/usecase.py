@@ -16,6 +16,7 @@ class FetchAndSendFreshPostsUsecase:
 
     SEND_MESSAGES_MAX_TRY_COUNT = 3
     SLEEP_BETWEEN_MESSAGES_SENDING = 1
+    SLEEP_BETWEEN_RETRIES = 5
 
     def __init__(
             self,
@@ -39,6 +40,7 @@ class FetchAndSendFreshPostsUsecase:
                     time.sleep(self.SLEEP_BETWEEN_MESSAGES_SENDING)
             except Exception:
                 self.logger.log(traceback.format_exc())
+                time.sleep(self.SLEEP_BETWEEN_RETRIES)
                 continue
             else:
                 LastRefreshDAO.update_last_refresh()

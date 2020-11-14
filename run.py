@@ -3,6 +3,7 @@ import typer
 
 import os
 import logging
+import time
 from datetime import datetime, timedelta
 from logging.handlers import RotatingFileHandler
 
@@ -25,7 +26,7 @@ def update_last_refresh():
     with db_session() as session:
         last_refresh = LastRefreshDAO._get_or_create_last_refresh(session)
         datetime_to_set = datetime.utcnow() - DEBUG_LAST_REFRESH_UPDATE_DELTA
-        last_refresh.timestamp = int((datetime_to_set - datetime(1970, 1, 1)).total_seconds())
+        last_refresh.timestamp = int(time.mktime(datetime_to_set.timetuple()))
 
 
 @app.command()
@@ -53,7 +54,7 @@ def run(
         update_last_refresh()
         logging.basicConfig(
             format='[%(name)s %(levelname)s] %(asctime)s: %(message)s',
-            level=logging.CRITICAL,
+            level=logging.NOTSET,
         )
     else:
         log_filepath = os.path.join(settings.BASEDIR, 'logs', 'tg_bot.log')

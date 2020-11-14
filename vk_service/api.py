@@ -87,7 +87,7 @@ class VkApi(VkApiBase):
     ) -> dict:
         method = 'wall.get'
         params = {
-            'owner_id': '-{}'.format(public_id),
+            'owner_id': f'-{public_id}',
             'count': post_count,
             'offset': offset,
             'filter': 'owner',

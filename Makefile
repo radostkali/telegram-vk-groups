@@ -8,7 +8,7 @@ up:
 stop:
 	docker-compose stop
 
-logs:
+log:
 	docker-compose logs --follow
 
 shell:
