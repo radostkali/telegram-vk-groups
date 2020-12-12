@@ -1,4 +1,5 @@
 from telegram.ext import CallbackContext
+from telegram.error import BadRequest
 
 import telegram_service.constants
 from fetch_and_send_service.services.vk_post_to_tg_message_service import TgMessageDTO
@@ -19,9 +20,12 @@ class SendTgMessageService:
         self.callback_context.bot.send_media_group(**message_dto.payload)
 
     def execute(self, message_dto: TgMessageDTO) -> None:
-        if message_dto.media_type == telegram_service.constants.MEDIA_TYPE_TEXT:
-            self._send_text(message_dto)
-        elif message_dto.media_type == telegram_service.constants.MEDIA_TYPE_PHOTO:
-            self._send_photo(message_dto)
-        elif message_dto.media_type == telegram_service.constants.MEDIA_TYPE_GROUP:
-            self._send_group(message_dto)
+        try:
+            if message_dto.media_type == telegram_service.constants.MEDIA_TYPE_TEXT:
+                self._send_text(message_dto)
+            elif message_dto.media_type == telegram_service.constants.MEDIA_TYPE_PHOTO:
+                self._send_photo(message_dto)
+            elif message_dto.media_type == telegram_service.constants.MEDIA_TYPE_GROUP:
+                self._send_group(message_dto)
+        except BadRequest:
+            pass
