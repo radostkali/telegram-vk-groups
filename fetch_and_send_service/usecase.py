@@ -31,6 +31,7 @@ class FetchAndSendFreshPostsUsecase:
     def execute(self):
         last_refresh = LastRefreshDAO.get_last_refresh()
         for _ in range(self.SEND_MESSAGES_MAX_TRY_COUNT):
+            message_dto = None
             try:
                 messages_dto_list = self.fetch_fresh_posts_to_messages_service.execute(
                     from_timestamp=last_refresh
@@ -40,6 +41,7 @@ class FetchAndSendFreshPostsUsecase:
                     time.sleep(self.SLEEP_BETWEEN_MESSAGES_SENDING)
             except Exception:
                 self.logger.log(traceback.format_exc())
+                self.logger.log('message_dto: {}'.format(message_dto))
                 time.sleep(self.SLEEP_BETWEEN_RETRIES)
                 continue
             else:
